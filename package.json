@@ -1,0 +1,11 @@
+{
+  "name": "rxjs_introduction",
+  "version": "0.1.0",
+  "description": "Accompanying code of the introduction to RxJs",
+  "author": "xwk",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "rx": "~2.4.3",
+    "request": "~2.53.0"
+  }
+}

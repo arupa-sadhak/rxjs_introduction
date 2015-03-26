@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.4.1/rx.all.js"></script>
+        <style>
+        </style>
+    </head>
+    <body>
+        <p>Adapted from AutoComplete example at https://github.com/Reactive-Extensions/RxJS-Examples/</p>
+        <input type="text" id="searchtext">
+        <ul id="results"></ul>
+        </div>
+        <script>
+            var input = document.querySelector('#searchtext');
+            var results = document.querySelector('#results');
+            var baseUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=';
+
+            function renderPhrase(phrase){
+                var li = document.createElement('li');
+                li.innerHTML = phrase;
+                results.appendChild(li);
+            }
+
+
+            Rx.Observable.fromEvent(input, 'keyup')
+            .map(function () {
+                return input.value;
+            })
+            .filter(function (term) {
+                return term.length > 2; // Only if the input text is longer than 2 characters
+            })
+            .throttle(750) // avoid unnecessarily trigger a search if user type quickly without stop
+            .distinctUntilChanged() // Imagine user type a character and then delete it immediately
+            .flatMap(function (term) {
+                var url = baseUrl + encodeURIComponent(term) + '&callback=?';
+                return Rx.Observable.fromPromise($.getJSON(url));
+            }) // Search wikipedia
+            .filter(function (res) {
+                return res["1"] !== undefined; // Where we have data
+            })
+            .map(function(res){
+                return res["1"];
+            })
+            .subscribe(function (suggestedPhrases) {
+                $("#results").empty()
+                Rx.Observable.from(suggestedPhrases)
+                .subscribe(renderPhrase)
+            });
+        </script>
+    </body>
+</html>

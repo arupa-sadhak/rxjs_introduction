@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/2.4.1/rx.all.js"></script>
+        <style>
+            #text {
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Adapted from TimeFlies example at https://github.com/Reactive-Extensions/RxJS-Examples/</p>
+        <div id="container">
+        </div>
+        <script>
+            var container = document.querySelector('#container');
+
+            function wrapCharToSpanElement(c){
+                var span = document.createElement('span');
+                span.innerHTML = c;
+                span.style.position = 'absolute';
+                container.appendChild(span);
+                return span;
+            }
+
+            Array.prototype.forEach.apply("TIME FLIES LIKE AN ARROW", [function(c, idx){
+                var span = wrapCharToSpanElement(c);
+
+                Rx.Observable.fromEvent(document, 'mousemove')
+                .map(function(evt){
+                    return {
+                        x: evt.clientX,
+                        y: evt.clientY
+                    }
+                })
+                .delay((idx+1)*100)
+                .subscribe(function(pos){
+                    span.style.left = pos.x + (idx+1)*15 + "px";
+                    span.style.top = pos.y + "px";
+                });
+
+            }]);
+
+        </script>
+    </body>
+</html>
